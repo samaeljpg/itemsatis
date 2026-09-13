@@ -82,10 +82,12 @@ const hizmetEslesmeleri = {
 
 app.post('/webhook', async (req, res) => {
     console.log("🔔 İtemsatış'tan yeni bir bildirim yakalandı!");
-console.log("Gelen Veri Detayı:", req.body);
+    console.log("Gelen Veri Detayı:", req.body);
+
     const detaylar = req.body.details;
 
-    if (!detaylar || detaylar.event !== 'advert_sold') {
+    // 'order' veya 'advert_sold' gelirse kabul etmesi için güncelliyoruz
+    if (!detaylar || (detaylar.event !== 'order' && detaylar.event !== 'advert_sold')) {
         return res.status(200).send("İlgilenilmeyen bildirim türü.");
     }
 
@@ -95,12 +97,13 @@ console.log("Gelen Veri Detayı:", req.body);
         return res.status(200).send("Test başarıyla alındı.");
     }
 
-const eventType = req.body.details.event; // 'order' dönmesi lazım
-const ilanAdi = req.body.details.advert.title; // 'Test İlan' yazan kısım
-const siparisVeren = req.body.details.customer.name;
-
-// Linki çekmek için post_datas'ın ilk elemanının içindeki anahtarı tam yazmalıyız:
-const link = req.body.details.post_datas[0]["Gönderi (Post) Linki"];
+    const ilanAdi = detaylar.advert.title;
+    
+    // Linki doğru yerden (post_datas içindeki Türkçe anahtardan) çekiyoruz
+    const link = (detaylar.post_datas && detaylar.post_datas['Gönderi (Post) Linki']) 
+                 || detaylar.customer_note 
+                 || detaylar.user_input 
+                 || "link_bulunamadi";
 
     const hizmet = hizmetEslesmeleri[ilanAdi];
 
