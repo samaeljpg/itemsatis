@@ -5,6 +5,10 @@ const axios = require('axios');
 const app = express();
 app.use(express.json());
 
+// 🟢 UPTIMEROBOT İÇİN PING NOKTASI (Sunucuyu 7/24 uyanık tutar)
+app.get('/', (req, res) => {
+    res.status(200).send("Otomasyon sunucusu 7/24 aktif!");
+});
 // Kendi SMM panelindeki Servis ID'lerini buraya yazacaksın:
 const hizmetEslesmeleri = {
     "⭐[SORUNSUZ] İnstagram 1000 Takipçi⭐": { servisId: 12639, miktar: 1000 },
@@ -73,7 +77,7 @@ const hizmetEslesmeleri = {
         { servisId: 9508, miktar: 1250 },
         { servisId: 8538, miktar: 250 },
     ],
-    "Test İlan": { servisId: 999, miktar: 1 } // Testleri gerçekte de denemek için
+    "Test İlan": { servisId: 13025, miktar: 50 } // Testleri gerçekte de denemek için
 };
 
 app.post('/webhook', async (req, res) => {
@@ -92,32 +96,37 @@ app.post('/webhook', async (req, res) => {
     }
 
     const ilanAdi = detaylar.advert.title;
-    
-    // Gerçek siparişte müşterinin form alanına yazdığı link / kullanıcı adı
-    // (İtemsatış'ın gerçek sipariş JSON yapısına göre burası customer_note veya user_input olabilir)
-    const link = detaylar.customer_note || detaylar.user_input || "link_bulunamadi"; 
+    const link = detaylar.customer_note || detaylar.user_input || "link_bulunamadi";
 
     const hizmet = hizmetEslesmeleri[ilanAdi];
 
     if (!hizmet) {
         console.log(`⚠️ Uyarı: '${ilanAdi}' adında bir ilan satıldı ama kodda Servis ID eşleşmesi bulunamadı!`);
-        return res.status(200).send("Servis eşleşmesi yok."); 
+        return res.status(200).send("Servis eşleşmesi yok.");
     }
 
-    console.log(`🚀 SMM Paneline Sipariş Gönderiliyor... İlan: ${ilanAdi} | Link: ${link} | Miktar: ${hizmet.miktar}`);
+    console.log(`🚀 SMM Paneline Sipariş Gönderiliyor... İlan: ${ilanAdi} | Link: ${link}`);
 
     try {
-        // SMM Paneline API isteği atıyoruz
-        const smmYanit = await axios.post(process.env.SMM_API_URL, {
-            key: process.env.SMM_API_KEY,
-            action: 'add',
-            service: hizmet.servisId,
-            link: link,
-            quantity: hizmet.miktar
-        });
+        // Eğer tekli servis girildiyse bile bunu dizi (array) içine alıyoruz ki for döngüsü patlamasın
+        const gonderilecekServisler = Array.isArray(hizmet) ? hizmet : [hizmet];
 
-        console.log("✅ SMM Panel Başarılı Yanıtı:", smmYanit.data);
-        return res.status(200).send("Sipariş başarıyla SMM paneline iletildi.");
+        // Paketteki tüm servisler için SMM paneline sırayla istek atıyoruz
+        for (const servis of gonderilecekServisler) {
+            console.log(`⏳ Servis işleniyor... ID: ${servis.servisId} | Miktar: ${servis.miktar}`);
+
+            const smmYanit = await axios.post(process.env.SMM_API_URL, {
+                key: process.env.SMM_API_KEY,
+                action: 'add',
+                service: servis.servisId,
+                link: link,
+                quantity: servis.miktar
+            });
+
+            console.log(`✅ SMM Panel Başarılı Yanıtı (Servis ${servis.servisId}):`, smmYanit.data);
+        }
+
+        return res.status(200).send("Sipariş(ler) başarıyla SMM paneline iletildi.");
 
     } catch (error) {
         console.error("❌ SMM API İstek Hatası:", error.response?.data || error.message);
