@@ -95,8 +95,12 @@ console.log("Gelen Veri Detayı:", req.body);
         return res.status(200).send("Test başarıyla alındı.");
     }
 
-    const ilanAdi = detaylar.advert.title;
-    const link = detaylar.customer_note || detaylar.user_input || "link_bulunamadi";
+const eventType = req.body.details.event; // 'order' dönmesi lazım
+const ilanAdi = req.body.details.advert.title; // 'Test İlan' yazan kısım
+const siparisVeren = req.body.details.customer.name;
+
+// Linki çekmek için post_datas'ın ilk elemanının içindeki anahtarı tam yazmalıyız:
+const link = req.body.details.post_datas[0]["Gönderi (Post) Linki"];
 
     const hizmet = hizmetEslesmeleri[ilanAdi];
 
