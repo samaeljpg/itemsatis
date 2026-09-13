@@ -82,7 +82,7 @@ const hizmetEslesmeleri = {
 
 app.post('/webhook', async (req, res) => {
     console.log("🔔 İtemsatış'tan yeni bir bildirim yakalandı!");
-
+console.log("Gelen Veri Detayı:", req.body);
     const detaylar = req.body.details;
 
     if (!detaylar || detaylar.event !== 'advert_sold') {
