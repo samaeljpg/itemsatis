@@ -140,10 +140,15 @@ app.post('/webhook', async (req, res) => {
     const ilanAdi = detaylar.advert.title;
     
     // Linki doğru yerden (post_datas içindeki Türkçe anahtardan) çekiyoruz
-    const link = (detaylar.post_datas && detaylar.post_datas['Gönderi (Post) Linki']) 
-                 || detaylar.customer_note 
-                 || detaylar.user_input 
-                 || "link_bulunamadi";
+let link = "link_bulunamadi";
+
+if (detaylar.post_datas && Object.keys(detaylar.post_datas).length > 0) {
+    link = Object.values(detaylar.post_datas)[0];
+} else if (detaylar.customer_note) {
+    link = detaylar.customer_note;
+} else if (detaylar.user_input) {
+    link = detaylar.user_input;
+}
 
     const hizmet = hizmetEslesmeleri[ilanAdi];
 
