@@ -11,11 +11,11 @@ app.get('/', (req, res) => {
 });
 // Kendi SMM panelindeki Servis ID'lerini buraya yazacaksın:
 const hizmetEslesmeleri = {
-    "⭐[SORUNSUZ] İnstagram 1000 Takipçi⭐": { servisId: 13066, miktar: 1000 },
-    "⭐[SORUNSUZ] İnstagram 5000 Takipçi⭐": { servisId: 13066, miktar: 5000 },
-    "⭐[SORUNSUZ] İnstagram 2500 Takipçi⭐": { servisId: 13066, miktar: 2500 },
-    "⭐[SORUNSUZ] İnstagram 100 Takipçi⭐": { servisId: 13066, miktar: 100 },
-    "⭐[SORUNSUZ] İnstagram 500 Takipçi⭐": { servisId: 13066, miktar: 500 },
+    "⭐[SORUNSUZ] İnstagram 1000 Takipçi⭐": { servisId: 13100, miktar: 1000 },
+    "⭐[SORUNSUZ] İnstagram 5000 Takipçi⭐": { servisId: 13100, miktar: 5000 },
+    "⭐[SORUNSUZ] İnstagram 2500 Takipçi⭐": { servisId: 13100, miktar: 2500 },
+    "⭐[SORUNSUZ] İnstagram 100 Takipçi⭐": { servisId: 13100, miktar: 100 },
+    "⭐[SORUNSUZ] İnstagram 500 Takipçi⭐": { servisId: 13100, miktar: 500 },
     "⭐ [SORUNSUZ] İnstagram 500.000 İzlenme⭐": { servisId: 13088, miktar: 500000 },
     "⭐ [SORUNSUZ] İnstagram 250.000 İzlenme⭐": { servisId: 13088, miktar: 250000 },
     "⭐ [SORUNSUZ] İnstagram 200.000 İzlenme⭐": { servisId: 13088, miktar: 200000 },
